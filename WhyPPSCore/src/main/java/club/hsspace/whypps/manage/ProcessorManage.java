@@ -42,7 +42,11 @@ public class ProcessorManage {
 
     @Init
     private void getImpl() throws IOException {
-        BufferedReader fileInput = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/whypps/club.hsspace.whypps.processor")));
+        InputStream resourceAsStream = getClass().getResourceAsStream("/whypps/club.hsspace.whypps.processor");
+        if(resourceAsStream == null)
+            return;
+
+        BufferedReader fileInput = new BufferedReader(new InputStreamReader(resourceAsStream));
         String line;
         while ((line = fileInput.readLine()) != null) {
             if (!line.trim().startsWith("#") && line.contains(":")) {

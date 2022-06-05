@@ -31,8 +31,19 @@ public class ContainerManage {
     private Class<?> runClass;
 
     public ContainerManage(Class<?> runClass) throws InvocationTargetException {
-        registerObject("runClass", runClass);
         this.runClass = runClass;
+        registerObject("runClass", runClass);
+
+        containerClass.put(ContainerManage.class, this);
+
+        injection(this);
+    }
+
+    public ContainerManage(Object runObject) throws InvocationTargetException {
+        this.runClass = runObject.getClass();
+        registerObject("runClass", runClass);
+        registerObject("runObject", runObject);
+        registerObject(runObject);
 
         containerClass.put(ContainerManage.class, this);
 
@@ -162,7 +173,8 @@ public class ContainerManage {
             Injection annotation = parameters[i].getAnnotation(Injection.class);
             if (annotation != null) {
                 objects[i] = containerName.get(annotation.name());
-            } else {
+            }
+            if(objects[i] == null){
                 objects[i] = containerClass.get(parameters[i].getType());
             }
         }

@@ -22,7 +22,7 @@ public class ServerMain {
         return List.of("/whypps/Certificate.ce");
     }
 
-    public static String getDefaultPropertiesFile() {
+    public static String getDefaultConfiguration() {
         return "/whypps/server.properties";
     }
 

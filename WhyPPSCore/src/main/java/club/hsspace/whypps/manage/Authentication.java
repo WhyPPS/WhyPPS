@@ -61,6 +61,9 @@ public class Authentication {
             if (debugKey != null) {
                 privateKey = CiphertextTools.decryptPBE(debugKey.password(), configuration.getPBEKey(), security);
                 logger.debug("初始化永久密钥成功，口令来自于程序内嵌调试模式。");
+            } else if (configuration.getDebugKey() != null) {
+                privateKey = CiphertextTools.decryptPBE(configuration.getDebugKey(), configuration.getPBEKey(), security);
+                logger.debug("初始化永久密钥成功，口令来自于配置文件调试模式。");
             } else {
                 logger.info("请输入密钥初始化口令：");
                 Scanner scanner = new Scanner(System.in);
@@ -79,11 +82,18 @@ public class Authentication {
     }
 
     @Init
-    private void initEmbedCertificate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException, GeneralSecurityException {
+    private void initEmbedCertificate(@Injection(name = "runObject") Object object) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException, GeneralSecurityException {
         Method getCertificates = runClass.getMethod("getCertificates");
-        List<String> certificates = (List<String>) getCertificates.invoke(null);
+        List<String> certificates = (List<String>) getCertificates.invoke(object);
         for (String certificate : certificates) {
-            InputStream ceIs = getClass().getResourceAsStream(certificate);
+            InputStream ceIs;
+            if (certificate.startsWith("cl:"))
+                ceIs = getClass().getResourceAsStream(certificate.replace("cl:", ""));
+            else if (certificate.startsWith("fi:"))
+                ceIs = new FileInputStream(certificate.replace("fi:", ""));
+            else
+                continue;
+
             byte[] bytes = ceIs.readAllBytes();
             Certificate ce = Certificate.getEmbedCertificate(bytes);
             ce.setLocal();

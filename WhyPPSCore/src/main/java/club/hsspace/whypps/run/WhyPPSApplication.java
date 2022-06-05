@@ -21,31 +21,42 @@ public class WhyPPSApplication {
 
     private Class<?> runClass;
 
-    private WhyPPSApplication(Class<?> runClass) throws InvocationTargetException {
-        System.out.println("""
-                __/\\\\\\______________/\\\\\\__/\\\\\\________________________/\\\\\\\\\\\\\\\\\\\\\\\\\\____/\\\\\\\\\\\\\\\\\\\\\\\\\\_______/\\\\\\\\\\\\\\\\\\\\\\___       \s
-                 _\\/\\\\\\_____________\\/\\\\\\_\\/\\\\\\_______________________\\/\\\\\\/////////\\\\\\_\\/\\\\\\/////////\\\\\\___/\\\\\\/////////\\\\\\_      \s
-                  _\\/\\\\\\_____________\\/\\\\\\_\\/\\\\\\____________/\\\\\\__/\\\\\\_\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\_______\\/\\\\\\__\\//\\\\\\______\\///__     \s
-                   _\\//\\\\\\____/\\\\\\____/\\\\\\__\\/\\\\\\___________\\//\\\\\\/\\\\\\__\\/\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\/\\\\\\\\\\\\\\\\\\\\\\\\\\/____\\////\\\\\\_________    \s
-                    __\\//\\\\\\__/\\\\\\\\\\__/\\\\\\___\\/\\\\\\\\\\\\\\\\\\\\_____\\//\\\\\\\\\\___\\/\\\\\\/////////____\\/\\\\\\/////////_________\\////\\\\\\______   \s
-                     ___\\//\\\\\\/\\\\\\/\\\\\\/\\\\\\____\\/\\\\\\/////\\\\\\_____\\//\\\\\\____\\/\\\\\\_____________\\/\\\\\\_____________________\\////\\\\\\___  \s
-                      ____\\//\\\\\\\\\\\\//\\\\\\\\\\_____\\/\\\\\\___\\/\\\\\\__/\\\\_/\\\\\\_____\\/\\\\\\_____________\\/\\\\\\______________/\\\\\\______\\//\\\\\\__ \s
-                       _____\\//\\\\\\__\\//\\\\\\______\\/\\\\\\___\\/\\\\\\_\\//\\\\\\\\/______\\/\\\\\\_____________\\/\\\\\\_____________\\///\\\\\\\\\\\\\\\\\\\\\\/___\s
-                        ______\\///____\\///_______\\///____\\///___\\////________\\///______________\\///________________\\///////////_____
-                """);
+    private WhyPPSApplication(Object o) throws InvocationTargetException {
 
-        this.runClass = runClass;
+        long start = System.currentTimeMillis();
 
         //启动容器管理器
-        containerManage = new ContainerManage(runClass);
+        if(o instanceof Class clazz) {
+            this.runClass = clazz;
+            containerManage = new ContainerManage(runClass);
+        } else {
+            this.runClass = o.getClass();
+            containerManage = new ContainerManage(o);
+        }
+
+        containerManage.registerObject(this);
+        logger.info("WhyPPSCore初始化成功，用时{}ms", System.currentTimeMillis() - start);
     }
 
-    public static void run(Class<?> runClass) {
+    public static WhyPPSApplication run(Class<?> runClass) {
         try {
-            WhyPPSApplication app = new WhyPPSApplication(runClass);
+            return new WhyPPSApplication(runClass);
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
+    public static WhyPPSApplication run(Object runObject) {
+        try {
+            return new WhyPPSApplication(runObject);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ContainerManage getContainerManage() {
+        return containerManage;
+    }
 }

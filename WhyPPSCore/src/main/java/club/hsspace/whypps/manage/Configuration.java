@@ -31,12 +31,16 @@ public class Configuration {
     }
 
     @Init
-    private void initFile(@Injection(name = "runClass") Class<?> runClass) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Method getDefaultPropertiesFile = runClass.getMethod("getDefaultPropertiesFile");
-        String file = (String) getDefaultPropertiesFile.invoke(null);
+    private void initFile(@Injection(name = "runClass") Class<?> runClass, @Injection(name="runObject") Object object) throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Method getDefaultConfiguration = runClass.getMethod("getDefaultConfiguration");
 
-        props = new Properties();
-        props.load(getClass().getResourceAsStream(file));
+        if(getDefaultConfiguration.getReturnType() == String.class) {
+            String file = (String) getDefaultConfiguration.invoke(object);
+            props = new Properties();
+            props.load(getClass().getResourceAsStream(file));
+        } else if (getDefaultConfiguration.getReturnType() == Properties.class) {
+            props = (Properties) getDefaultConfiguration.invoke(object);
+        }
 
         logger.info("配置管理器注册成功，读取参数{}条", props.size());
     }
@@ -59,6 +63,10 @@ public class Configuration {
 
     public boolean autoDistribution() {
         return Boolean.parseBoolean(props.getProperty("network.local.autoDistribution"));
+    }
+
+    public String getDebugKey() {
+        return props.getProperty("debug.debugkey");
     }
 
     public long getEffectiveTime() {

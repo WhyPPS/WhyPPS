@@ -50,16 +50,11 @@
             <groupId>club.hsspace.whypps</groupId>
             <artifactId>WhyPPSCore</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/WhyPPSCore-1.0-SNAPSHOT.jar</systemPath>
         </dependency>
-
         <dependency>
-            <groupId>club.hsspace.whypps.lib</groupId>
-            <artifactId>WhyPPSLib</artifactId>
+            <groupId>club.hsspace.whypps</groupId>
+            <artifactId>WhyPPSFramework</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../lib/WhyPPSLib-1.0-SNAPSHOT.jar</systemPath>
         </dependency>
 
         <!--模块依赖-->
@@ -71,5 +66,21 @@
         </dependency>
 
     </dependencies>
+
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <!-- 指定打包的jar包输出路径 -->
+                    <outputDirectory>${project.basedir}/../run/app</outputDirectory>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
 
 </project>

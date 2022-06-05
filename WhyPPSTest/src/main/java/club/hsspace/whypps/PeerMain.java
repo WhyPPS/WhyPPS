@@ -28,7 +28,7 @@ public class PeerMain {
     @Injection
     private static Authentication authentication;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException{
 
         WhyPPSApplication.run(PeerMain.class);
         TcpHandle connect = localHost.connect("127.0.0.1", 2683);
@@ -64,7 +64,7 @@ public class PeerMain {
         return List.of("/whypps/Certificate.ce");
     }
 
-    public static String getDefaultPropertiesFile() {
+    public static String getDefaultConfiguration() {
         return "/whypps/client.properties";
     }
 
