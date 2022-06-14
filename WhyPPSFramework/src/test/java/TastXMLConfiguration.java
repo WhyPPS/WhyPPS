@@ -30,13 +30,13 @@ public class TastXMLConfiguration {
         xmlConfiguration = new XMLConfiguration(new File("F:\\project\\WhyPPS\\run\\whypps_config.xml"));
     }
 
-    @Test
+    /*@Test
     public void testGetString() {
         String port = xmlConfiguration.getString("localServer.server.port.%");
         assertEquals(port, "2683");
 
         String enable = xmlConfiguration.getString("localServer.server.enable");
         assertEquals(enable, "true");
-    }
+    }*/
     
 }

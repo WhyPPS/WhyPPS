@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +52,10 @@ public class FrameManage {
 
     public DataStream getDataStream(String sign) {
         return dataStreamMap.get(sign);
+    }
+
+    public Collection<DataStream> getAllDataStream() {
+        return dataStreamMap.values();
     }
 
 }

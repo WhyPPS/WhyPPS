@@ -18,4 +18,12 @@ public class LongM extends SeniorBaseModel{
 
     }
 
+    public static LongM of(String requestId, int count) {
+        LongM longM = new LongM();
+        longM.requestId = requestId;
+        longM.time = System.currentTimeMillis();
+        longM.count = count;
+        return longM;
+    }
+
 }

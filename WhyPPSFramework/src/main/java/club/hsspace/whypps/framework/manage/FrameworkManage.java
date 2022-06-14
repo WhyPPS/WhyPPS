@@ -1,7 +1,7 @@
 package club.hsspace.whypps.framework.manage;
 
 
-import club.hsspace.whypps.framework.app.JarLoader;
+import club.hsspace.whypps.framework.app.AppJarLoader;
 import club.hsspace.whypps.manage.ContainerManage;
 import club.hsspace.whypps.run.WhyPPSApplication;
 import club.hsspace.whypps.framework.manage.XMLConfiguration.Configuration;
@@ -54,11 +54,16 @@ public class FrameworkManage {
         containerManage.registerObject(xmlConfiguration);
         containerManage.registerObject(fileManage);
 
-        JarLoader jarLoader = new JarLoader();
-        containerManage.registerObject(jarLoader);
-        containerManage.injection(jarLoader);
+        //应用管理器(app)
+        AppJarLoader appJarLoader = new AppJarLoader();
+        containerManage.registerObject(appJarLoader);
+        containerManage.injection(appJarLoader);
 
         containerManage.injection(this);
+    }
+
+    public ContainerManage getContainerManage() {
+        return containerManage;
     }
 
     public Properties getDefaultConfiguration() throws IOException {

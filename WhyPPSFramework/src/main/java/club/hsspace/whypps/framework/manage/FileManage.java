@@ -30,8 +30,10 @@ public class FileManage {
 
     public FileManage() {
 
-        String property = System.getProperty("java.class.path");
-        runPath = Path.of(property).getParent().toString();
+        //String property = System.getProperty("java.class.path");
+        runPath = Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile().substring(1)).getParent().toString();
+        //runPath = Path.of(property).getParent().toString();
+        logger.info("加载系统运行环境{}", runPath);
 
     }
 

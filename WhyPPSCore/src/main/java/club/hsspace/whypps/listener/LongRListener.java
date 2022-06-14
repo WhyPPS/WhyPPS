@@ -29,7 +29,7 @@ public class LongRListener implements LinkListener {
 
     @Override
     public boolean listener(DataStream dataStream, DataLink dataLink) {
-        LongMsgStream lms = new LongMsgStream();
+        LongMsgStream lms = new LongMsgStream(dataLink.getData().requestId, dataStream);
         //TODO: 判断重复
         longMsgManage.putLongMsgStream(dataLink.getData().requestId, lms);
 

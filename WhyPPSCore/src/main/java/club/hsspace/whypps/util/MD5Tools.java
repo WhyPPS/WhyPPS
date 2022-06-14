@@ -26,4 +26,15 @@ public class MD5Tools {
         return enStr;
     }
 
+    public static String md5String(byte[] data) {
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] enStr = messageDigest.digest(data);
+        return NumberTools.bytes2HexString(enStr);
+    }
+
 }

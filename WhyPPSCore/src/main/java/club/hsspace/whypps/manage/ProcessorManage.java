@@ -5,9 +5,11 @@ import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.processor.ContainerProcessor;
 import club.hsspace.whypps.processor.EquityProcessor;
 import club.hsspace.whypps.processor.FrameProcessor;
+import club.hsspace.whypps.processor.SpreadProcessor;
 import club.hsspace.whypps.processor.impl.ContainerProcessorImpl;
 import club.hsspace.whypps.processor.impl.EquityProcessorImpl;
 import club.hsspace.whypps.processor.impl.FrameProcessorImpl;
+import club.hsspace.whypps.processor.impl.SpreadProcessorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ public class ProcessorManage {
         implementationClass.put(ContainerProcessor.class, ContainerProcessorImpl.class);
         implementationClass.put(FrameProcessor.class, FrameProcessorImpl.class);
         implementationClass.put(EquityProcessor.class, EquityProcessorImpl.class);
+        implementationClass.put(SpreadProcessor.class, SpreadProcessorImpl.class);
     }
 
     //TODO: 这里要提供一个非文件读取式的嵌入注册机读取方式

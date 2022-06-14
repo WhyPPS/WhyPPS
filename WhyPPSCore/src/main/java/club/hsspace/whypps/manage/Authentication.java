@@ -153,6 +153,10 @@ public class Authentication {
         return result;
     }
 
+    public Collection<Certificate> getCertificates() {
+        return certificates.values();
+    }
+
     public byte[] getCertificateBytes(String sign) {
         return certificates.get(sign).getCertificateBytes();
     }

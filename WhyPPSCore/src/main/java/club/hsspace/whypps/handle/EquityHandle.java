@@ -104,7 +104,7 @@ public class EquityHandle {
         dataStream.sendData(dataLink);
     }
 
-    public void sendLong(Callback<ObjectPair<LongR, LongMsgStream>> run, String api, JSONObject data,int timeout) {
+    public void sendLong(Callback<ObjectPair<LongR, LongMsgStream>> run, String api, JSONObject data, int timeout) {
         String requestId = generateRequestId();
         LongS longS = LongS.of(requestId, api, data, timeout);
 

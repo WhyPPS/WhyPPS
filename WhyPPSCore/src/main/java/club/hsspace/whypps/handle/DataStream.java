@@ -43,6 +43,9 @@ public class DataStream {
     //发送数据帧 数据帧处理器
     private EquityHandle equityHandle;
 
+    //主从通信协议 消息处理器
+    private SpreadHandle spreadHandle;
+
     @Injection
     private Authentication authentication;
 
@@ -59,14 +62,33 @@ public class DataStream {
         return equityHandle;
     }
 
+    public SpreadHandle getSpreadHandle() {
+        return spreadHandle;
+    }
+
     @Init
     public void initEquityHandle(ContainerManage containerManage) throws InvocationTargetException {
          equityHandle = new EquityHandle(this);
          containerManage.injection(equityHandle);
     }
 
+    @Init
+    public void initSpreadHandle(ContainerManage containerManage) throws InvocationTargetException {
+        spreadHandle = new SpreadHandle(this);
+        containerManage.injection(spreadHandle);
+    }
+
     @Injection
     private FrameProcessor frameProcessor;
+
+    public TcpHandle getTcpHandle() {
+        return tcpHandle;
+    }
+
+    public boolean alive() {
+        //TODO:
+        return true;
+    }
 
     public Certificate getSrcCertificate() {
         return srcCertificate;

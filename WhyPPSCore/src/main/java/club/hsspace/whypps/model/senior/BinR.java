@@ -41,4 +41,12 @@ public class BinR extends SeniorBaseModel{
         return binR;
     }
 
+    public static BinR of(String requestId, Code code, JSONObject data) {
+        return of(requestId, code, data, false, null);
+    }
+
+    public static BinR of(String requestId, Code code) {
+        return of(requestId, code, null);
+    }
+
 }

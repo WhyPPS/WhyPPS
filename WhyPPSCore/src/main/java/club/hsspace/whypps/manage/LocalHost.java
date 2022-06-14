@@ -3,6 +3,7 @@ package club.hsspace.whypps.manage;
 import club.hsspace.whypps.action.Container;
 import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.action.Injection;
+import club.hsspace.whypps.handle.DataStream;
 import club.hsspace.whypps.handle.TcpHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -41,8 +43,6 @@ public class LocalHost implements Runnable {
     private Thread listen;
 
     private ServerSocket serverSocket;
-
-    private Map<String, TcpHandle> sign2TcpHandle = new HashMap<>();
 
     private LocalHost() {
         es = Executors.newCachedThreadPool();
@@ -84,14 +84,6 @@ public class LocalHost implements Runnable {
         }
         es.submit(tcpHandle);
         return tcpHandle;
-    }
-
-    public TcpHandle getTcpHandle(String sign) {
-        return sign2TcpHandle.get(sign);
-    }
-
-    public void putTcpHandle(String sign, TcpHandle connect) {
-        sign2TcpHandle.put(sign, connect);
     }
 
     @Override

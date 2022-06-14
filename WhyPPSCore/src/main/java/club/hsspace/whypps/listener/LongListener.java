@@ -37,11 +37,12 @@ public class LongListener implements LinkListener{
 
     @Override
     public boolean listener(DataStream dataStream, DataLink dataLink) {
-        LongR longR = equityProcessor.listenerLongMsg(dataStream, (LongS) dataLink.getData());
 
-        LongMsgStream lms = new LongMsgStream();
+        LongMsgStream lms = new LongMsgStream(dataLink.getData().requestId, dataStream);
         //TODO: 判断重复
         longMsgManage.putLongMsgStream(dataLink.getData().requestId, lms);
+
+        LongR longR = equityProcessor.listenerLongMsg(dataStream, (LongS) dataLink.getData());
 
         dataStream.sendData(new DataLink(DataLabel.LONG_R, longR, null));
         return true;

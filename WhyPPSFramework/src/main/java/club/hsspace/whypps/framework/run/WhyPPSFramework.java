@@ -57,6 +57,10 @@ public class WhyPPSFramework {
         return whyPPSFramework;
     }
 
+    public ContainerManage getContainerManage() {
+        return frameworkManage.getContainerManage();
+    }
+
     public static void main(String[] args) throws Exception {
         WhyPPSFramework.run();
     }

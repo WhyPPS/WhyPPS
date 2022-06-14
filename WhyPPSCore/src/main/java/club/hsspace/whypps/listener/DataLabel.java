@@ -8,8 +8,8 @@ public enum DataLabel {
     HEART_S(HeartS.class), HEART_R(HeartR.class),
     LONG_S(LongS.class), LONG_R(LongR.class), LONG_M(LongM.class),
 
-    RADIO(null),
-    SWAP_S(null), SWAP_R(null);
+    RADIO(Radio.class), RADIO_S(RadioS.class), RADIO_R(RadioR.class),
+    SWAP_S(SwapS.class), SWAP_R(SwapR.class);
 
     public final Class<? extends SeniorBaseModel> mapClass;
 

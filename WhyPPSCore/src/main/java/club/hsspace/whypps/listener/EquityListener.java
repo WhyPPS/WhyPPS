@@ -29,11 +29,6 @@ public class EquityListener implements LinkListener{
 
     @Override
     public boolean listener(DataStream dataStream, DataLink dataLink) {
-        if(dataLink.getDataLabel() == DataLabel.LONG_R){
-            LongMsgStream lms = new LongMsgStream();
-            //TODO: 判断重复
-            longMsgManage.putLongMsgStream(dataLink.getData().requestId, lms);
-        }
 
         EquityHandle equityHandle = dataStream.getEquityHandle();
         equityHandle.receiveData(dataLink);

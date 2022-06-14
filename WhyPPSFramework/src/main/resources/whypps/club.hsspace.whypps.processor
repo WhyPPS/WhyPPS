@@ -1,2 +1,4 @@
 #对等协议处理机分配器
 club.hsspace.whypps.processor.EquityProcessor:club.hsspace.whypps.framework.app.EquityDistribution
+#主从协议处理机分配器
+club.hsspace.whypps.processor.SpreadProcessor:club.hsspace.whypps.framework.app.SpreadDistribution

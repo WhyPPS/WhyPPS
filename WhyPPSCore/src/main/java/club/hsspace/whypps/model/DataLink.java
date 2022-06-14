@@ -40,6 +40,10 @@ public class DataLink<T extends SeniorBaseModel> {
         this.extraData = extraData;
     }
 
+    public static DataLink of(DataLabel dataLabel, SeniorBaseModel data, byte[] extraData) {
+        return new DataLink(dataLabel, data, extraData);
+    }
+
     public DataLink(byte[] dataArray) {
         int action = 0;
         for (int i = 0; i < dataArray.length; i++) {

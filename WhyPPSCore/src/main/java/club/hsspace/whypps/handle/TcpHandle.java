@@ -51,6 +51,14 @@ public class TcpHandle implements Runnable, Closeable {
 
     private OutputStream output;
 
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public boolean alive() {
+        return socket.isConnected();
+    }
+
     @Injection
     private Authentication authentication;
 
@@ -68,17 +76,20 @@ public class TcpHandle implements Runnable, Closeable {
         try {
             while (true) {
                 int read = input.read();
+                boolean processor = true;
                 /** PPS获取证书  */
                 if (read == 'P' && input.read() == 'P' && input.read() == 'S') {
                     byte[] bytes = input.readNBytes(16);
                     String sign = NumberTools.bytes2HexString(bytes);
                     logger.debug("节点{}尝试获取证书：{}", socket.getRemoteSocketAddress(), sign);
                     byte[] certificateBytes = authentication.getCertificateBytes(sign);
+                    int version = input.read();
+                    long time = NumberTools.bytes2Long(input.readNBytes(8), 0);
                     if (certificateBytes != null) {
                         send(NumberTools.bytesMerger(new byte[]{'R'}, certificateBytes));
                     } else {
                         //知道目的地址的tcp连接，前往该链接获取证书并转发返回
-                        TcpHandle tcpHandle = localHost.getTcpHandle(sign);
+                        TcpHandle tcpHandle = frameManage.getDataStream(sign).getTcpHandle();
                         if (tcpHandle != null) {
                             //转发证书或空包
                             tcpHandle.getCertificate(ce -> {
@@ -223,6 +234,12 @@ public class TcpHandle implements Runnable, Closeable {
                             }
                         }
                     }
+                } else {
+                    processor = false;
+                }
+
+                if(processor) {
+                    logger.debug("TCP链接{}接收到请求标识'{}'", socket.getRemoteSocketAddress(), (char) read);
                 }
             }
         } catch (IOException e) {
@@ -231,7 +248,7 @@ public class TcpHandle implements Runnable, Closeable {
             try {
                 this.close();
             } catch (IOException ex) {
-                //ex.printStackTrace();
+                ex.printStackTrace();
             }
         }
     }
