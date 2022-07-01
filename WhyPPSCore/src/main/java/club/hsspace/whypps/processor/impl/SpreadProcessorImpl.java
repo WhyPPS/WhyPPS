@@ -28,19 +28,10 @@ public class SpreadProcessorImpl implements SpreadProcessor {
     }
 
     @Override
-    public SwapS listenerSwapMsg(DataStream dataStream, SwapS swapS) {
-        if (swapS.times == swapS.range)
-            return null;
-
-        swapS.times++;
-        return swapS;
-    }
-
-    @Override
     public SwapR returnSwapMsg(DataStream dataStream, JSONArray data, SwapS swapS, int involve) {
         data.add(dataStream.getTcpHandle().getSocket().getLocalAddress().toString());
         logger.debug("接收到Swap消息{}，消息体{}", swapS.api, data);
-        return SwapR.of(Code.OK, swapS.requestId, data, involve);
+        return SwapR.of(swapS.requestId, Code.OK, data, involve);
     }
 
 }

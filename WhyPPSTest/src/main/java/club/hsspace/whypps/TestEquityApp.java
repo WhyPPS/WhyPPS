@@ -1,18 +1,14 @@
 package club.hsspace.whypps;
 
 import club.hsspace.whypps.framework.app.annotation.*;
-import club.hsspace.whypps.handle.DataStream;
 import club.hsspace.whypps.handle.LongMsgStream;
 import club.hsspace.whypps.model.senior.Code;
 import club.hsspace.whypps.util.NumberTools;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
@@ -24,9 +20,9 @@ import java.nio.charset.StandardCharsets;
  * @Mail: 1750359613@qq.com
  */
 @AppInterface
-public class TestApp {
+public class TestEquityApp {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestApp.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestEquityApp.class);
 
     @ApiDataMsg("/getUserMsg")
     public boolean getUserMsg(@DataParam("name") String name) {
@@ -73,7 +69,9 @@ public class TestApp {
                 throw new RuntimeException(e);
             }
         }).start();
+
         return true;
+
     }
 
 }

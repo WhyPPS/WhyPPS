@@ -45,30 +45,4 @@ public class FileManage {
         return runPath;
     }
 
-
-    public Set<Class<?>> loadAllClass(String jarPath) throws IOException, ClassNotFoundException {
-        Set<Class<?>> classSet = new HashSet<>(16);
-
-        URL url = new URL("file:///" + jarPath);
-        URLClassLoader classLoader = new URLClassLoader(new URL[]{url}, getClass().getClassLoader());
-
-        JarFile jarFile = new JarFile(jarPath);
-        Enumeration<JarEntry> entries = jarFile.entries();
-
-        while (entries.hasMoreElements()) {
-            JarEntry jarEntry = entries.nextElement();
-            String jarName = jarEntry.getName();
-            //System.out.println(jarName);
-            if (!jarEntry.isDirectory() && jarName.endsWith(".class")) {
-                // 将文件路径名转换为包名称的形式
-                String className = jarName.replace(".class", "");
-                //className = ClassUtils.convertResourcePathToClassName(className);
-                className = className.replace('/', '.');
-                Class<?> aClass = classLoader.loadClass(className);
-                classSet.add(aClass);
-            }
-        }
-
-        return classSet;
-    }
 }

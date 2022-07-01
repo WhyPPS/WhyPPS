@@ -13,7 +13,14 @@ public interface SpreadProcessor {
     void listenerRadioMsg(DataStream dataStream, Radio radio, RadioMsg radioMsg);
 
     //交换协议 1.  监听消息构并构造转发请求体，返回null则不再转发
-    SwapS listenerSwapMsg(DataStream dataStream, SwapS swapS);
+    default SwapS listenerSwapMsg(DataStream dataStream, SwapS swapS) {
+        if (swapS.times == swapS.range)
+            return null;
+
+        swapS.times++;
+        return swapS;
+    }
+
 
     //交换协议 2.  多方请求收到回应后调用，返回汇总后的数据(决定抛弃或保留)
     default boolean summarySwapMsg(JSONArray jsonArray, SwapR swapR) {

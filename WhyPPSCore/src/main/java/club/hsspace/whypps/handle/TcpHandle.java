@@ -74,8 +74,9 @@ public class TcpHandle implements Runnable, Closeable {
     @Override
     public void run() {
         try {
+            int read = 0;
             while (true) {
-                int read = input.read();
+                read = input.read();
                 boolean processor = true;
                 /** PPS获取证书  */
                 if (read == 'P' && input.read() == 'P' && input.read() == 'S') {
@@ -251,6 +252,7 @@ public class TcpHandle implements Runnable, Closeable {
                 ex.printStackTrace();
             }
         }
+        logger.info("TCP\"{}\"链接结束", socket.getRemoteSocketAddress());
     }
 
     public synchronized void send(byte[] data) throws IOException {

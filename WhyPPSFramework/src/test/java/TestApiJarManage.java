@@ -14,9 +14,9 @@ import static org.junit.Assert.assertNotEquals;
  * @Author: Qing_ning
  * @Mail: 1750359613@qq.com
  */
-public class TestAppJarLoader {
+public class TestApiJarManage {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestAppJarLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestApiJarManage.class);
 
     @Test
     public void test() throws NoSuchMethodException {
@@ -25,7 +25,7 @@ public class TestAppJarLoader {
 
         Method tM = TestClass.class.getMethod("hashCode");
 
-        Method jM = TestAppJarLoader.class.getMethod("hashCode");
+        Method jM = TestApiJarManage.class.getMethod("hashCode");
 
         assertEquals(oM, tM);
         assertNotEquals(oM, jM);

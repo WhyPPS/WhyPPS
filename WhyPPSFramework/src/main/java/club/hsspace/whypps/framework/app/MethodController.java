@@ -32,6 +32,8 @@ public class MethodController {
 
     private Map<String, Method> radioMsgMap = new HashMap<>();
 
+    private Map<String, Method> swapMsgMap = new HashMap<>();
+
     /** 执行实例 */
     private Map<Method, Object> runObject = new HashMap<>();
 
@@ -83,6 +85,13 @@ public class MethodController {
                 registerMethod++;
             }
 
+            ApiSwapMsg apiSwapMsg = method.getAnnotation(ApiSwapMsg.class);
+            if(apiSwapMsg != null) {
+                swapMsgMap.put(apiSwapMsg.value(), method);
+                runMethod = true;
+                registerMethod++;
+            }
+
             if(t != null && runMethod) {
                 runObject.put(method, t);
             }
@@ -128,6 +137,17 @@ public class MethodController {
 
     public MethodAndObject getRadioMethod(String api) {
         Method method = radioMsgMap.get(api);
+        if(method == null)
+            return null;
+
+        Object object = runObject.get(method);
+        if(object == null)
+            return null;
+        return new MethodAndObject(method, object);
+    }
+
+    public MethodAndObject getSwapMethod(String api) {
+        Method method = swapMsgMap.get(api);
         if(method == null)
             return null;
 

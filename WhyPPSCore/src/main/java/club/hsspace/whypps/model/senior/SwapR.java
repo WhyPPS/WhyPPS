@@ -20,7 +20,7 @@ public class SwapR extends SeniorBaseModel{
 
     public int involve;
 
-    public static SwapR of(Code code, String requestId, JSONArray data, int involve) {
+    public static SwapR of(String requestId, Code code, JSONArray data, int involve) {
         SwapR swapR = new SwapR();
         swapR.code = code;
         swapR.requestId = requestId;

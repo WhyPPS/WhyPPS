@@ -130,8 +130,8 @@ public class SpreadHandle {
         AtomicReference<DataLink<RadioR>> dataLinkAtomicReference = new AtomicReference<>();
         callbackMap.put(radioMsg.requestId, dataLinkAtomicReference);
 
-        dataStream.sendData(dataLink);
         synchronized (dataLinkAtomicReference) {
+            dataStream.sendData(dataLink);
             dataLinkAtomicReference.wait(5000);
             callbackMap.remove(radioMsg.requestId);
         }
