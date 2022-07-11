@@ -12,4 +12,5 @@ public class JarFormatException extends Exception{
     public JarFormatException(String message) {
         super(message);
     }
+
 }

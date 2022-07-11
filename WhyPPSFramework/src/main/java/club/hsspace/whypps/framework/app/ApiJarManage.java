@@ -34,6 +34,8 @@ public class ApiJarManage {
 
     private AttributeManage attributeManage;
 
+    private MountManage mountManage;
+
     private ClassLoader apiClassLoader;
 
     @Init
@@ -46,13 +48,17 @@ public class ApiJarManage {
         containerManage.registerObject(attributeManage);
         containerManage.injection(attributeManage);
 
+        mountManage = new MountManage();
+        containerManage.registerObject(mountManage);
+        containerManage.injection(mountManage);
+
         if(equityProcessor instanceof EquityDistribution ed){
-            ed.injection(methodController);
+            ed.injection(methodController, mountManage);
             logger.info("注入MethodController至EquityDistribution实现成功");
         }
 
         if(spreadProcessor instanceof SpreadDistribution sd){
-            sd.injection(methodController);
+            sd.injection(methodController, mountManage);
             logger.info("注入MethodController至SpreadDistribution实现成功");
         }
 
@@ -71,7 +77,7 @@ public class ApiJarManage {
 
         File file = fileManage.getFile("\\app\\applib");
 
-        URL[] urls = Arrays.stream(file.listFiles((dir, name) -> name.endsWith(".jar")))
+        URL[] urls = Arrays.stream(file.listFiles((dir, name) -> name.endsWith(".jar") || name.endsWith(".jmod")))
                 .map(n -> "file:///" + n)
                 .map(ApiJarManage::URLOf)
                 .toArray(URL[]::new);

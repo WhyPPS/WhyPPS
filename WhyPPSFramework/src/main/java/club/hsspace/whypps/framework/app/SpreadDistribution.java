@@ -31,12 +31,15 @@ public class SpreadDistribution extends SpreadProcessorImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(SpreadDistribution.class);
 
+    private MethodController methodController;
+
     @Injection
     private ContainerManage containerManage;
 
-    private MethodController methodController;
+    private MountManage mountManage;
 
-    public void injection(MethodController methodController) {
+    public void injection(MethodController methodController, MountManage mountManage) {
+        this.mountManage = mountManage;
         this.methodController = methodController;
     }
 
@@ -138,7 +141,9 @@ public class SpreadDistribution extends SpreadProcessorImpl {
 
             DataParam dataParam = parameter.getAnnotation(DataParam.class);
             Injection injection = parameter.getAnnotation(Injection.class);
-            if (clazz == DataStream.class) {
+            if (mountManage.hasMount(clazz)) {
+                param[i] = mountManage.getInstance(dataStream, clazz);
+            } else if (clazz == DataStream.class) {
                 param[i] = dataStream;
             } else if (dataParam != null) {
                 if (clazz == String.class)

@@ -2,6 +2,7 @@ package club.hsspace.whypps.framework.manage;
 
 
 import club.hsspace.whypps.framework.app.ApiJarManage;
+import club.hsspace.whypps.framework.plugin.PluginJarManage;
 import club.hsspace.whypps.manage.ContainerManage;
 import club.hsspace.whypps.run.WhyPPSApplication;
 import club.hsspace.whypps.framework.manage.XMLConfiguration.Configuration;
@@ -58,6 +59,11 @@ public class FrameworkManage {
         ApiJarManage apiJarManage = new ApiJarManage();
         containerManage.registerObject(apiJarManage);
         containerManage.injection(apiJarManage);
+
+        //插件管理器(plugin)
+        PluginJarManage pluginJarManage = new PluginJarManage();
+        containerManage.registerObject(pluginJarManage);
+        containerManage.injection(pluginJarManage);
 
         containerManage.injection(this);
     }
