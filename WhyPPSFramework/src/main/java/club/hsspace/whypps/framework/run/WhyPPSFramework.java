@@ -54,6 +54,10 @@ public class WhyPPSFramework {
                 """);
 
         WhyPPSFramework whyPPSFramework = new WhyPPSFramework();
+
+        ContainerManage cm = whyPPSFramework.getContainerManage();
+        cm.registerObject(whyPPSFramework);
+
         return whyPPSFramework;
     }
 

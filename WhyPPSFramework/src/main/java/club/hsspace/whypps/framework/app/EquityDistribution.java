@@ -44,7 +44,10 @@ public class EquityDistribution extends EquityProcessorImpl {
     @Injection
     private LongMsgManage longMsgManage;
 
-    public void injection(MethodController methodController) {
+    private MountManage mountManage;
+
+    public void injection(MethodController methodController, MountManage mountManage) {
+        this.mountManage = mountManage;
         this.methodController = methodController;
     }
 
@@ -74,7 +77,7 @@ public class EquityDistribution extends EquityProcessorImpl {
             return DataR.of(dataS.requestId, Code.SERVER_ERROR, null);
         }
 
-        if(methodReturn == null)
+        if (methodReturn == null)
             return DataR.of(dataS.requestId, Code.REQUEST_FAIL, null);
 
         Class<?> returnClass = methodReturn.getClass();
@@ -119,7 +122,7 @@ public class EquityDistribution extends EquityProcessorImpl {
             return DataLink.of(DataLabel.BIN_R, BinR.of(binS.requestId, Code.SERVER_ERROR, null, false, null), null);
         }
 
-        if(methodReturn == null)
+        if (methodReturn == null)
             return emptyBinRDataLink(BinR.of(binS.requestId, Code.REQUEST_FAIL));
 
         Class<?> returnClass = methodReturn.getClass();
@@ -178,7 +181,7 @@ public class EquityDistribution extends EquityProcessorImpl {
             return LongR.of(longS.requestId, Code.SERVER_ERROR, null);
         }
 
-        if(methodReturn == null)
+        if (methodReturn == null)
             return LongR.of(longS.requestId, Code.REQUEST_FAIL, null);
 
         Class<?> returnClass = methodReturn.getClass();
@@ -215,7 +218,9 @@ public class EquityDistribution extends EquityProcessorImpl {
 
             DataParam dataParam = parameter.getAnnotation(DataParam.class);
             Injection injection = parameter.getAnnotation(Injection.class);
-            if (clazz == DataStream.class) {
+            if (mountManage.hasMount(clazz)) {
+                param[i] = mountManage.getInstance(dataStream, clazz);
+            } else if (clazz == DataStream.class) {
                 param[i] = dataStream;
             } else if (dataParam != null) {
                 if (clazz == String.class)
@@ -241,7 +246,7 @@ public class EquityDistribution extends EquityProcessorImpl {
                 Object obj = containerManage.getFromClass(clazz);
                 if (obj != null)
                     param[i] = obj;
-                else if(clazz.isAssignableFrom(Object.class))
+                else if (clazz.isAssignableFrom(Object.class))
                     param[i] = data.toJavaObject(clazz);
             }
         }

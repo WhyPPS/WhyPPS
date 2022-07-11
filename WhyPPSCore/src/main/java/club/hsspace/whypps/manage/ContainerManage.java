@@ -157,14 +157,18 @@ public class ContainerManage {
                 .toList();
         try {
             for (Method method : ms) {
-                method.setAccessible(true);
-                Parameter[] parameters = method.getParameters();
-                method.invoke(object, fillObject(parameters));
+                invokeMethod(method, object);
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public void invokeMethod(Method method, Object obj) throws InvocationTargetException, IllegalAccessException {
+        method.setAccessible(true);
+        Parameter[] parameters = method.getParameters();
+        method.invoke(obj, fillObject(parameters));
     }
 
     private Object[] fillObject(Parameter[] parameters) {

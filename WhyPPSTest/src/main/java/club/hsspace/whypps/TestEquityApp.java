@@ -25,17 +25,20 @@ public class TestEquityApp {
     private static final Logger logger = LoggerFactory.getLogger(TestEquityApp.class);
 
     @ApiDataMsg("/getUserMsg")
-    public boolean getUserMsg(@DataParam("name") String name) {
-        System.out.println(name);
-        return true;
+    public User getUserMsg(UserMount userMount) {
+        if(userMount.hasUser()) {
+            return userMount.getUser();
+        }
+        return null;
     }
 
     @ApiDataMsg("/login")
-    public Code login(@DataParam("user") String user, @DataParam("psw") String psw) {
+    public Code login(UserMount userMount, User user) {
         //查询数据库取得密码
         String password = "123456";
 
-        if(password.equals(psw)) {
+        if(password.equals(user.password)) {
+            userMount.setUser(user);
             return Code.OK;
         } else {
             return Code.of(21041, "密码错误");

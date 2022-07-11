@@ -37,26 +37,13 @@ public class MethodController {
     /** 执行实例 */
     private Map<Method, Object> runObject = new HashMap<>();
 
-    @Injection
-    private ContainerManage containerManage;
-
-    public <T> int scanMethod(Class<T> clazz) {
+    public <T> int scanMethod(Class<?> clazz, T obj) {
         int registerMethod = 0;
-
-        AppInterface appInterface = clazz.getAnnotation(AppInterface.class);
-        T t = null;
-        if(appInterface.autoRegister()) {
-            try {
-                t = newInstance(clazz);
-                containerManage.registerObject(t);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
 
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
             boolean runMethod = false;
+            //业务接口方法注册
             ApiDataMsg apiDataMsg = method.getAnnotation(ApiDataMsg.class);
             if(apiDataMsg != null) {
                 dataMsgMap.put(apiDataMsg.value(), method);
@@ -92,8 +79,8 @@ public class MethodController {
                 registerMethod++;
             }
 
-            if(t != null && runMethod) {
-                runObject.put(method, t);
+            if(obj != null && runMethod && obj.getClass() == clazz) {
+                runObject.put(method, obj);
             }
         }
         return registerMethod;
@@ -155,12 +142,6 @@ public class MethodController {
         if(object == null)
             return null;
         return new MethodAndObject(method, object);
-    }
-
-    private <T> T newInstance(Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Constructor<T> constructor = clazz.getConstructor();
-        T t = constructor.newInstance();
-        return t;
     }
 
 }
