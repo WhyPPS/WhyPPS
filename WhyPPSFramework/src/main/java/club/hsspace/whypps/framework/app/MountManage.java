@@ -40,6 +40,7 @@ public class MountManage {
                 Map<DataStream, Object> map = mountClass.get(clazz);
                 if (returnType == void.class) {
                     map.put(dataStream, args[0]);
+                    return null;
                 } else if (returnType == boolean.class) {
                     return map.containsKey(dataStream);
                 }

@@ -41,6 +41,8 @@ public class WhyPPSFramework {
      */
     public static WhyPPSFramework run() throws Exception {
 
+        Thread.currentThread().setContextClassLoader(WhyPPSFramework.class.getClassLoader());
+
         System.out.println("""
                 __/\\\\\\______________/\\\\\\__/\\\\\\________________________/\\\\\\\\\\\\\\\\\\\\\\\\\\____/\\\\\\\\\\\\\\\\\\\\\\\\\\_______/\\\\\\\\\\\\\\\\\\\\\\___       \s
                  _\\/\\\\\\_____________\\/\\\\\\_\\/\\\\\\_______________________\\/\\\\\\/////////\\\\\\_\\/\\\\\\/////////\\\\\\___/\\\\\\/////////\\\\\\_      \s

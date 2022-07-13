@@ -2,6 +2,7 @@ package club.hsspace.whypps.manage;
 
 import club.hsspace.whypps.action.Container;
 import club.hsspace.whypps.action.Init;
+import club.hsspace.whypps.action.Injection;
 import club.hsspace.whypps.processor.ContainerProcessor;
 import club.hsspace.whypps.processor.EquityProcessor;
 import club.hsspace.whypps.processor.FrameProcessor;
@@ -44,8 +45,8 @@ public class ProcessorManage {
     //TODO: 这里要提供一个非文件读取式的嵌入注册机读取方式
 
     @Init
-    private void getImpl() throws IOException {
-        InputStream resourceAsStream = getClass().getResourceAsStream("/whypps/club.hsspace.whypps.processor");
+    private void getImpl(@Injection(name = "runClass") Class runClass) throws IOException {
+        InputStream resourceAsStream = runClass.getResourceAsStream("/whypps/club.hsspace.whypps.processor");
         if(resourceAsStream == null)
             return;
 
@@ -56,7 +57,7 @@ public class ProcessorManage {
                 String[] split = line.split(":");
                 try {
                     Class<?> processorInterface = Class.forName(split[0].trim());
-                    Class<?> processorImpl = Class.forName(split[1].trim());
+                    Class<?> processorImpl = runClass.getClassLoader().loadClass(split[1].trim());
                     if (processorInterface.isInterface())
                         implementationClass.put(processorInterface, processorImpl);
                 } catch (ClassNotFoundException e) {

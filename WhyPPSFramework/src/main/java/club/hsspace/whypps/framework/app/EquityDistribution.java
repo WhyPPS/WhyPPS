@@ -246,7 +246,7 @@ public class EquityDistribution extends EquityProcessorImpl {
                 Object obj = containerManage.getFromClass(clazz);
                 if (obj != null)
                     param[i] = obj;
-                else if (clazz.isAssignableFrom(Object.class))
+                else
                     param[i] = data.toJavaObject(clazz);
             }
         }

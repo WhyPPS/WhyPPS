@@ -77,7 +77,7 @@ public class ApiJarManage {
 
         File file = fileManage.getFile("\\app\\applib");
 
-        URL[] urls = Arrays.stream(file.listFiles((dir, name) -> name.endsWith(".jar") || name.endsWith(".jmod")))
+        URL[] urls = Arrays.stream(file.listFiles((dir, name) -> name.endsWith(".jar")))
                 .map(n -> "file:///" + n)
                 .map(ApiJarManage::URLOf)
                 .toArray(URL[]::new);
