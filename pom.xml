@@ -12,6 +12,9 @@
     <modules>
         <module>WhyPPSCore</module>
         <module>WhyPPSFramework</module>
+        <module>WhyPPSPlugin</module>
+        <module>WhyPPSTest</module>
+        <module>WhyPPSStart</module>
     </modules>
 
     <properties>

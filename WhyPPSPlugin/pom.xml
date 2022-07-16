@@ -2,23 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>WhyPPS</artifactId>
+        <groupId>club.hsspace.whypps</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>club.hsspace.whypps</groupId>
-    <artifactId>WhyPPSTest</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>WhyPPSPlugin</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
-
-    <parent>
-        <groupId>club.hsspace.whypps</groupId>
-        <artifactId>WhyPPS</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
 
     <dependencies>
         <dependency>
@@ -31,12 +27,6 @@
             <artifactId>WhyPPSFramework</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <dependency>
-            <groupId>club.hsspace.whypps</groupId>
-            <artifactId>WhyPPSPlugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
 
@@ -47,7 +37,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <!-- 指定打包的jar包输出路径 -->
-                    <outputDirectory>${project.basedir}/../run/app</outputDirectory>
+                    <outputDirectory>${project.basedir}/../run/plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

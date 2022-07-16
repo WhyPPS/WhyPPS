@@ -64,6 +64,7 @@ public class LibManage {
             Method run = aClass.getMethod("run");
             run.invoke(null);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
             throw new WhyPPSFrameworkNotFoundException("包WhyPPSFramework版本不符或错误");
         }
     }

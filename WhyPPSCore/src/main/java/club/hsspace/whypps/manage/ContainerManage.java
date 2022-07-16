@@ -166,20 +166,30 @@ public class ContainerManage {
     }
 
     public void invokeMethod(Method method, Object obj) throws InvocationTargetException, IllegalAccessException {
-        method.setAccessible(true);
-        Parameter[] parameters = method.getParameters();
-        method.invoke(obj, fillObject(parameters));
+        invokeMethod(method, obj, null);
     }
 
-    private Object[] fillObject(Parameter[] parameters) {
+    public void invokeMethod(Method method, Object obj, Map<Class<?>, Object> fillMap) throws InvocationTargetException, IllegalAccessException {
+        method.setAccessible(true);
+        Parameter[] parameters = method.getParameters();
+        method.invoke(obj, fillObject(parameters, fillMap));
+    }
+
+    private Object[] fillObject(Parameter[] parameters, Map<Class<?>, Object> fillMap) {
         Object[] objects = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
+            Class<?> type = parameters[i].getType();
+            if(fillMap != null && fillMap.containsKey(type)){
+                objects[i] = fillMap.get(type);
+                continue;
+            }
+
             Injection annotation = parameters[i].getAnnotation(Injection.class);
             if (annotation != null) {
                 objects[i] = containerName.get(annotation.name());
             }
             if(objects[i] == null){
-                objects[i] = containerClass.get(parameters[i].getType());
+                objects[i] = containerClass.get(type);
             }
         }
         return objects;

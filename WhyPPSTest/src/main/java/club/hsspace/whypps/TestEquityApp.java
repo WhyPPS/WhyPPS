@@ -1,5 +1,6 @@
 package club.hsspace.whypps;
 
+import club.hsspace.whypps.framework.app.InterceptorHandle;
 import club.hsspace.whypps.framework.app.annotation.*;
 import club.hsspace.whypps.handle.LongMsgStream;
 import club.hsspace.whypps.model.senior.Code;
@@ -23,6 +24,14 @@ import java.nio.charset.StandardCharsets;
 public class TestEquityApp {
 
     private static final Logger logger = LoggerFactory.getLogger(TestEquityApp.class);
+
+    @Interceptor(sort = 1000, list = "/login")
+    public void loginInterceptor(UserMount userMount, User user, InterceptorHandle interceptorHandle) {
+        boolean b = userMount.hasUser();
+        if(!b) {
+            interceptorHandle.interruptReturn(Code.of(21041, "密码错误"));
+        }
+    }
 
     @ApiDataMsg("/getUserMsg")
     public User getUserMsg(UserMount userMount) {

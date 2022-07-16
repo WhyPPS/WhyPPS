@@ -55,15 +55,20 @@ public class FrameworkManage {
         containerManage.registerObject(xmlConfiguration);
         containerManage.registerObject(fileManage);
 
-        //应用管理器(app)
-        ApiJarManage apiJarManage = new ApiJarManage();
-        containerManage.registerObject(apiJarManage);
-        containerManage.injection(apiJarManage);
+        //事件管理器
+        EventManage eventManage = new EventManage();
+        containerManage.registerObject(eventManage);
+        containerManage.injection(eventManage);
 
         //插件管理器(plugin)
         PluginJarManage pluginJarManage = new PluginJarManage();
         containerManage.registerObject(pluginJarManage);
         containerManage.injection(pluginJarManage);
+
+        //应用管理器(app)
+        ApiJarManage apiJarManage = new ApiJarManage();
+        containerManage.registerObject(apiJarManage);
+        containerManage.injection(apiJarManage);
 
         containerManage.injection(this);
     }

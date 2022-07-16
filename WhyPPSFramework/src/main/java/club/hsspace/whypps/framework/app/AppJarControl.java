@@ -1,10 +1,7 @@
 package club.hsspace.whypps.framework.app;
 
 import club.hsspace.whypps.action.Init;
-import club.hsspace.whypps.framework.app.annotation.AppInterface;
-import club.hsspace.whypps.framework.app.annotation.AppStart;
-import club.hsspace.whypps.framework.app.annotation.Initialize;
-import club.hsspace.whypps.framework.app.annotation.MountEntity;
+import club.hsspace.whypps.framework.app.annotation.*;
 import club.hsspace.whypps.framework.manage.FileManage;
 import club.hsspace.whypps.manage.ContainerManage;
 import org.slf4j.Logger;
@@ -68,6 +65,7 @@ public class AppJarControl {
 
     }
 
+    //TODO: 这里需要重构为RunningSpace和使用EventManage
     private String runPath;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -125,7 +123,7 @@ public class AppJarControl {
     }
 
     @Init(sort = 20)
-    private void initClass(MethodController methodController, ContainerManage containerManage, MountManage mountManage) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, JarFormatException {
+    private void initClass(MethodController methodController, ContainerManage containerManage, MountManage mountManage, InterceptorManage interceptorManage) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, JarFormatException {
 
         Set<Class<?>> classSet = new HashSet<>(16);
 
@@ -188,6 +186,10 @@ public class AppJarControl {
                     AppStart appStart = declaredMethod.getAnnotation(AppStart.class);
                     if (appStart != null)
                         startMethod.add(declaredMethod);
+
+                    Interceptor interceptor = declaredMethod.getAnnotation(Interceptor.class);
+                    if(interceptor != null)
+                        interceptorManage.registerInterceptor(interceptor, declaredMethod, object);
                 }
             }
 

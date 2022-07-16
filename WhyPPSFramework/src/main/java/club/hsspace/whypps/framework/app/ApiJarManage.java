@@ -30,36 +30,34 @@ public class ApiJarManage {
 
     }
 
-    private MethodController methodController;
-
-    private AttributeManage attributeManage;
-
-    private MountManage mountManage;
-
     private ClassLoader apiClassLoader;
 
     @Init
     private void loadAllClass(ContainerManage containerManage, EquityProcessor equityProcessor, SpreadProcessor spreadProcessor) throws InvocationTargetException {
-        methodController = new MethodController();
+        MethodController methodController = new MethodController();
         containerManage.registerObject(methodController);
         containerManage.injection(methodController);
 
-        attributeManage = new AttributeManage();
+        AttributeManage attributeManage = new AttributeManage();
         containerManage.registerObject(attributeManage);
         containerManage.injection(attributeManage);
 
-        mountManage = new MountManage();
+        MountManage mountManage = new MountManage();
         containerManage.registerObject(mountManage);
         containerManage.injection(mountManage);
 
+        InterceptorManage interceptorManage = new InterceptorManage();
+        containerManage.registerObject(interceptorManage);
+        containerManage.injection(interceptorManage);
+
         if(equityProcessor instanceof EquityDistribution ed){
-            ed.injection(methodController, mountManage);
-            logger.info("注入MethodController至EquityDistribution实现成功");
+            containerManage.injection(ed);
+            logger.info("注入EquityDistribution实现成功");
         }
 
         if(spreadProcessor instanceof SpreadDistribution sd){
-            sd.injection(methodController, mountManage);
-            logger.info("注入MethodController至SpreadDistribution实现成功");
+            containerManage.injection(sd);
+            logger.info("注入SpreadDistribution实现成功");
         }
 
     }
@@ -73,7 +71,7 @@ public class ApiJarManage {
     }
 
     @Init(sort = 10)
-    private void initAPIClassLoader(FileManage fileManage) {
+    private void initAPIClassLoader(FileManage fileManage, ContainerManage containerManage) throws InvocationTargetException {
 
         File file = fileManage.getFile("\\app\\applib");
 
@@ -82,7 +80,8 @@ public class ApiJarManage {
                 .map(ApiJarManage::URLOf)
                 .toArray(URL[]::new);
 
-        apiClassLoader = new URLClassLoader(urls, getClass().getClassLoader());
+        apiClassLoader = new ApiClassLoader(urls, getClass().getClassLoader());
+        containerManage.injection(apiClassLoader);
     }
 
     @Init(sort = 20)

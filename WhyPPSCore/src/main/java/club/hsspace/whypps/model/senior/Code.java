@@ -19,12 +19,7 @@ public record Code(int code, String msg) {
     public static final Code REQUEST_FAIL = of(20000, "请求失败");
 
     public static Code of(int code) {
-        Code codeI = codeMap.get(code);
-        if (codeI != null)
-            return codeI;
-        codeI = new Code(code, "未定义错误信息码，如您遇到此错误，请联系系统管理员。");
-        codeMap.put(code, codeI);
-        return codeI;
+        return of(code, "未定义错误信息码，如您遇到此错误，请联系系统管理员。");
     }
 
     public static Code of(int code, String msg) {

@@ -2,7 +2,9 @@ package club.hsspace.whypps.framework.plugin;
 
 import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.framework.app.ApiJarManage;
+import club.hsspace.whypps.framework.manage.EventManage;
 import club.hsspace.whypps.framework.manage.FileManage;
+import club.hsspace.whypps.framework.manage.event.FrameworkStartedEvent;
 import club.hsspace.whypps.manage.ContainerManage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,7 @@ public class PluginJarManage {
     private String runPath;
 
     @Init
-    private void initPluginClassLoader(FileManage fileManage, ContainerManage containerManage) {
+    private void initPluginClassLoader(FileManage fileManage, ContainerManage containerManage, EventManage eventManage) {
         File file = fileManage.getFile("\\plugins");
         runPath = file.getPath();
 
@@ -54,16 +56,19 @@ public class PluginJarManage {
                 .map(ApiJarManage::URLOf)
                 .forEach(urls::add);
 
-        ClassLoader pluginClassLoader = new URLClassLoader(urls.toArray(URL[]::new), PluginJarManage.class.getClassLoader());
+        ClassLoader pluginClassLoader = new PluginClassLoader(urls.toArray(URL[]::new), PluginJarManage.class.getClassLoader());
+        containerManage.registerObject(pluginClassLoader);
 
         for (File f : files) {
-            PluginControl pluginControl = new PluginControl(f);
+            PluginControl pluginControl = new PluginControl(f, pluginClassLoader);
             try {
                 containerManage.injection(pluginControl);
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
+
+        eventManage.triggerEvent(new FrameworkStartedEvent());
     }
 
 }

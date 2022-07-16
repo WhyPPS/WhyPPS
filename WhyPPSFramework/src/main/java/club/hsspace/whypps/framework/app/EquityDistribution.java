@@ -1,11 +1,10 @@
 package club.hsspace.whypps.framework.app;
 
 import club.hsspace.whypps.action.Injection;
-import club.hsspace.whypps.framework.app.annotation.DataParam;
+import club.hsspace.whypps.framework.app.annotation.RequestEnum;
 import club.hsspace.whypps.handle.DataStream;
 import club.hsspace.whypps.handle.LongMsgStream;
 import club.hsspace.whypps.listener.DataLabel;
-import club.hsspace.whypps.manage.ContainerManage;
 import club.hsspace.whypps.manage.LongMsgManage;
 import club.hsspace.whypps.model.DataLink;
 import club.hsspace.whypps.model.senior.*;
@@ -16,14 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * @ClassName: EquityDistribution
@@ -36,20 +28,14 @@ public class EquityDistribution extends EquityProcessorImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(EquityDistribution.class);
 
-    private MethodController methodController;
-
     @Injection
-    private ContainerManage containerManage;
+    private MethodController methodController;
 
     @Injection
     private LongMsgManage longMsgManage;
 
-    private MountManage mountManage;
-
-    public void injection(MethodController methodController, MountManage mountManage) {
-        this.mountManage = mountManage;
-        this.methodController = methodController;
-    }
+    @Injection
+    private InterceptorManage interceptorManage;
 
     @Override
     public DataR listenerDataMsg(DataStream dataStream, DataS dataS) {
@@ -57,22 +43,14 @@ public class EquityDistribution extends EquityProcessorImpl {
         if (mo == null)
             return DataR.of(dataS.requestId, Code.NOT_FOUND, null);
 
-        Method method = mo.method();
-        Object object = mo.object();
-
         JSONObject data = dataS.data;
         if (data == null) {
             data = new JSONObject();
         }
 
-        Parameter[] parameters = method.getParameters();
-        Object[] param = fillObject(dataStream, data, parameters);
-        fillCustomObject(param, parameters, Map.of(DataS.class, dataS));
-
         Object methodReturn;
-
         try {
-            methodReturn = method.invoke(object, param);
+            methodReturn = interceptorManage.executeRequest(RequestEnum.DATA, dataS.api, dataStream,data, mo, Map.of(DataS.class, dataS));
         } catch (Exception e) {
             return DataR.of(dataS.requestId, Code.SERVER_ERROR, null);
         }
@@ -102,22 +80,14 @@ public class EquityDistribution extends EquityProcessorImpl {
         if (mo == null)
             return DataLink.of(DataLabel.BIN_R, BinR.of(binS.requestId, Code.NOT_FOUND, null, false, null), null);
 
-        Method method = mo.method();
-        Object object = mo.object();
-
         JSONObject data = binS.data;
         if (data == null) {
             data = new JSONObject();
         }
 
-        Parameter[] parameters = method.getParameters();
-        Object[] param = fillObject(dataStream, data, parameters);
-        fillCustomObject(param, parameters, Map.of(BinS.class, binS, byte[].class, extraData));
-
         Object methodReturn;
-
         try {
-            methodReturn = method.invoke(object, param);
+            methodReturn = interceptorManage.executeRequest(RequestEnum.BIN, binS.api, dataStream,data, mo, Map.of(BinS.class, binS, byte[].class, extraData));
         } catch (Exception e) {
             return DataLink.of(DataLabel.BIN_R, BinR.of(binS.requestId, Code.SERVER_ERROR, null, false, null), null);
         }
@@ -158,25 +128,18 @@ public class EquityDistribution extends EquityProcessorImpl {
         if (mo == null)
             return LongR.of(longS.requestId, Code.NOT_FOUND, null);
 
-        Method method = mo.method();
-        Object object = mo.object();
-
         JSONObject data = longS.data;
         if (data == null) {
             data = new JSONObject();
         }
 
-        Parameter[] parameters = method.getParameters();
-        Object[] param = fillObject(dataStream, data, parameters);
         LongMsgStream longMsgStream = longMsgManage.getStream(longS.requestId);
-        fillCustomObject(param, parameters, Map.of(LongS.class, longS,
-                LongMsgStream.class, longMsgStream,
-                InputStream.class, longMsgStream.getInputStream()));
 
         Object methodReturn;
-
         try {
-            methodReturn = method.invoke(object, param);
+            methodReturn = interceptorManage.executeRequest(RequestEnum.LONG, longS.api, dataStream,data, mo, Map.of(LongS.class, longS,
+                    LongMsgStream.class, longMsgStream,
+                    InputStream.class, longMsgStream.getInputStream()));
         } catch (Exception e) {
             return LongR.of(longS.requestId, Code.SERVER_ERROR, null);
         }
@@ -197,60 +160,6 @@ public class EquityDistribution extends EquityProcessorImpl {
             return LongR.of(longS.requestId, Code.OK, new JSONObject(Map.of("value", methodReturn)));
 
         return LongR.of(longS.requestId, Code.OK, (JSONObject) JSONObject.toJSON(methodReturn));
-    }
-
-    private void fillCustomObject(Object[] objects, Parameter[] parameters, Map<Class<?>, Object> objectMap) {
-        Set<Class<?>> classes = objectMap.keySet();
-        for (int i = 0; i < objects.length; i++) {
-            if (classes.contains(parameters[i].getType())) {
-                objects[i] = objectMap.get(parameters[i].getType());
-            }
-        }
-    }
-
-    private Object[] fillObject(DataStream dataStream, JSONObject data, Parameter[] parameters) {
-
-        Object[] param = new Object[parameters.length];
-
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
-            Class<?> clazz = parameter.getType();
-
-            DataParam dataParam = parameter.getAnnotation(DataParam.class);
-            Injection injection = parameter.getAnnotation(Injection.class);
-            if (mountManage.hasMount(clazz)) {
-                param[i] = mountManage.getInstance(dataStream, clazz);
-            } else if (clazz == DataStream.class) {
-                param[i] = dataStream;
-            } else if (dataParam != null) {
-                if (clazz == String.class)
-                    param[i] = data.getString(dataParam.value());
-                else if (clazz == Integer.class || clazz == int.class)
-                    param[i] = data.getInteger(dataParam.value());
-                else if (clazz == Long.class || clazz == long.class)
-                    param[i] = data.getLong(dataParam.value());
-                else if (clazz == Boolean.class || clazz == boolean.class)
-                    param[i] = data.getBoolean(dataParam.value());
-                else if (clazz == BigInteger.class)
-                    param[i] = data.getBigInteger(dataParam.value());
-                else if (clazz == BigDecimal.class)
-                    param[i] = data.getBigDecimal(dataParam.value());
-                else
-                    param[i] = data.getObject(dataParam.value(), clazz);
-            } else if (injection != null) {
-                if (injection.name().equals(""))
-                    param[i] = containerManage.getFromClass(clazz);
-                else
-                    param[i] = containerManage.getFromName(injection.name());
-            } else {
-                Object obj = containerManage.getFromClass(clazz);
-                if (obj != null)
-                    param[i] = obj;
-                else
-                    param[i] = data.toJavaObject(clazz);
-            }
-        }
-        return param;
     }
 
 }
