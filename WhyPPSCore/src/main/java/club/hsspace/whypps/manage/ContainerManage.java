@@ -1,6 +1,7 @@
 package club.hsspace.whypps.manage;
 
 import club.hsspace.whypps.action.*;
+import club.hsspace.whypps.model.DynamicParameterInjection;
 import club.hsspace.whypps.processor.ContainerProcessor;
 import club.hsspace.whypps.util.ClassScanner;
 import club.hsspace.whypps.util.NumberTools;
@@ -133,7 +134,7 @@ public class ContainerManage {
                     field.setAccessible(true);
                     if (!annotation.name().equals("")) {
                         Object o = containerName.get(annotation.name());
-                        if (o != null && o.getClass().isInstance(field.getType())) {
+                        if (o != null && o.getClass() == field.getType()) {
                             field.set(object, o);
                             result++;
                         }
@@ -171,16 +172,28 @@ public class ContainerManage {
 
     public void invokeMethod(Method method, Object obj, Map<Class<?>, Object> fillMap) throws InvocationTargetException, IllegalAccessException {
         method.setAccessible(true);
-        Parameter[] parameters = method.getParameters();
-        method.invoke(obj, fillObject(parameters, fillMap));
+        method.invoke(obj, fillObject(method, fillMap));
     }
 
-    private Object[] fillObject(Parameter[] parameters, Map<Class<?>, Object> fillMap) {
+    private Map<Class<?>, DynamicParameterInjection> dpiMap = new HashMap<>();
+
+    public void dpi(Class<?> clazz, DynamicParameterInjection dpi) {
+        this.dpiMap.put(clazz, dpi);
+    }
+
+    private Object[] fillObject(Method method, Map<Class<?>, Object> fillMap) {
+        Parameter[] parameters = method.getParameters();
         Object[] objects = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Class<?> type = parameters[i].getType();
             if(fillMap != null && fillMap.containsKey(type)){
                 objects[i] = fillMap.get(type);
+                continue;
+            }
+
+            if(dpiMap.containsKey(type)) {
+                DynamicParameterInjection dpi = dpiMap.get(type);
+                objects[i] = dpi.injection(method);
                 continue;
             }
 

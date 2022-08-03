@@ -82,6 +82,9 @@ public class SpreadDistribution extends SpreadProcessorImpl {
         else if (methodReturn instanceof JSONObject jsonObject) {
             ja.add(jsonObject);
             return SwapR.of(swapS.requestId, Code.OK, ja, involve);
+        } else if (methodReturn instanceof JSONArray jsonArray) {
+            ja.addAll(jsonArray);
+            return SwapR.of(swapS.requestId, Code.OK, ja, involve);
         } else if (methodReturn instanceof Boolean bool)
             return SwapR.of(swapS.requestId, bool ? Code.OK : Code.REQUEST_FAIL, ja, involve);
         else if (methodReturn instanceof Number || returnClass == String.class) {

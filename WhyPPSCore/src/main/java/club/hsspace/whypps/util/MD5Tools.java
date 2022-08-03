@@ -3,6 +3,7 @@ package club.hsspace.whypps.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -35,6 +36,19 @@ public class MD5Tools {
         }
         byte[] enStr = messageDigest.digest(data);
         return NumberTools.bytes2HexString(enStr);
+    }
+
+    public static byte[] SHA256(byte[] data){
+        MessageDigest messageDigest;
+        byte[] encodeStr = null;
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+            messageDigest.update(data);
+            encodeStr = messageDigest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return encodeStr;
     }
 
 }

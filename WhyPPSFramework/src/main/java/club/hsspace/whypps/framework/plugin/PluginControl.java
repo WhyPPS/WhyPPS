@@ -2,10 +2,8 @@ package club.hsspace.whypps.framework.plugin;
 
 import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.framework.app.JarFormatException;
+import club.hsspace.whypps.framework.manage.*;
 import club.hsspace.whypps.framework.manage.EventListener;
-import club.hsspace.whypps.framework.manage.EventManage;
-import club.hsspace.whypps.framework.manage.FileManage;
-import club.hsspace.whypps.framework.manage.RunningSpace;
 import club.hsspace.whypps.framework.manage.event.FrameworkStartedEvent;
 import club.hsspace.whypps.manage.ContainerManage;
 import org.slf4j.Logger;
@@ -66,9 +64,11 @@ public class PluginControl {
     private RunningSpace runningSpace;
 
     @Init(sort = 10)
-    public void initRunSpace(FileManage fileManage) throws IOException {
+    public void initRunSpace(FileManage fileManage, SpaceManage spaceManage) throws IOException {
         File file = fileManage.getFile("\\plugins\\" + name);
         runningSpace = new RunningSpace(file.getPath());
+        spaceManage.registerRunningSpace(name, runningSpace);
+
         if (!file.exists()) {
             file.mkdir();
 

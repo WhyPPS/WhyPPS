@@ -52,7 +52,7 @@ public class DataLink<T extends SeniorBaseModel> {
                     this.dataLabel = Enum.valueOf(DataLabel.class, new String(Arrays.copyOfRange(dataArray, 0, i)));
                     action = i + 1;
                 } else {
-                    this.data = JSON.toJavaObject(JSONObject.parseObject(new String(Arrays.copyOfRange(dataArray, action, i))), dataLabel.mapClass);
+                    this.data = JSON.toJavaObject(JSONObject.parseObject(new String(Arrays.copyOfRange(dataArray, action, i), StandardCharsets.UTF_8)), dataLabel.mapClass);
                     this.extraData = Arrays.copyOfRange(dataArray, i + 1, dataArray.length);
                     break;
                 }

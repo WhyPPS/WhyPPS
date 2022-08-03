@@ -60,6 +60,11 @@ public class FrameworkManage {
         containerManage.registerObject(eventManage);
         containerManage.injection(eventManage);
 
+        //运行空间管理器
+        SpaceManage spaceManage = new SpaceManage();
+        containerManage.registerObject(spaceManage);
+        containerManage.injection(spaceManage);
+
         //插件管理器(plugin)
         PluginJarManage pluginJarManage = new PluginJarManage();
         containerManage.registerObject(pluginJarManage);

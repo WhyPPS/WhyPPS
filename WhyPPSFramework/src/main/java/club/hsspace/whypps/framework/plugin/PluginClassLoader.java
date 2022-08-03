@@ -25,13 +25,12 @@ public class PluginClassLoader extends URLClassLoader {
         try {
             //TODO： 逻辑更新，不能用loadClass，改为只查PluginClassLoader尝试加载的类
             Class<?> aClass = loadClass(name, true);
-            Access access = aClass.getAnnotation(Access.class);
-            if(access != null)
-                return aClass;
+            /*Access access = aClass.getAnnotation(Access.class);
+            if(access != null)*/
+            return aClass;
         } catch (ClassNotFoundException e) {
             return null;
         }
-        return null;
     }
 
 

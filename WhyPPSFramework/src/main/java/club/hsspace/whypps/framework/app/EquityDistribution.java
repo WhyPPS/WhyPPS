@@ -10,6 +10,7 @@ import club.hsspace.whypps.model.DataLink;
 import club.hsspace.whypps.model.senior.*;
 import club.hsspace.whypps.processor.impl.EquityProcessorImpl;
 import club.hsspace.whypps.util.MD5Tools;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,7 @@ public class EquityDistribution extends EquityProcessorImpl {
         try {
             methodReturn = interceptorManage.executeRequest(RequestEnum.DATA, dataS.api, dataStream,data, mo, Map.of(DataS.class, dataS));
         } catch (Exception e) {
+            e.printStackTrace();
             return DataR.of(dataS.requestId, Code.SERVER_ERROR, null);
         }
 
@@ -65,6 +67,8 @@ public class EquityDistribution extends EquityProcessorImpl {
             return dataR;
         else if (methodReturn instanceof JSONObject jsonObject)
             return DataR.of(dataS.requestId, Code.OK, jsonObject);
+        else if (methodReturn instanceof JSONArray jsonArray)
+            return DataR.of(dataS.requestId, Code.OK, new JSONObject(Map.of("value", jsonArray)));
         else if (methodReturn instanceof Boolean bool)
             return DataR.of(dataS.requestId, bool ? Code.OK : Code.REQUEST_FAIL, null);
         else if (methodReturn instanceof Number || returnClass == String.class)
@@ -93,7 +97,7 @@ public class EquityDistribution extends EquityProcessorImpl {
         }
 
         if (methodReturn == null)
-            return emptyBinRDataLink(BinR.of(binS.requestId, Code.REQUEST_FAIL));
+            return emptyBinRDataLink(BinR.of(binS.requestId, Code.OK));
 
         Class<?> returnClass = methodReturn.getClass();
         if (methodReturn instanceof Code code)
@@ -102,6 +106,8 @@ public class EquityDistribution extends EquityProcessorImpl {
             return emptyBinRDataLink(binR);
         else if (methodReturn instanceof JSONObject jsonObject)
             return emptyBinRDataLink(BinR.of(binS.requestId, Code.OK, jsonObject));
+        else if (methodReturn instanceof JSONArray jsonArray)
+            return emptyBinRDataLink(BinR.of(binS.requestId, Code.OK, new JSONObject(Map.of("value", jsonArray))));
         else if (methodReturn instanceof Boolean bool)
             return emptyBinRDataLink(BinR.of(binS.requestId, bool ? Code.OK : Code.REQUEST_FAIL));
         else if (methodReturn instanceof Number || returnClass == String.class)
@@ -154,6 +160,8 @@ public class EquityDistribution extends EquityProcessorImpl {
             return longR;
         else if (methodReturn instanceof JSONObject jsonObject)
             return LongR.of(longS.requestId, Code.OK, jsonObject);
+        else if (methodReturn instanceof JSONArray jsonArray)
+            return LongR.of(longS.requestId, Code.OK, new JSONObject(Map.of("value", jsonArray)));
         else if (methodReturn instanceof Boolean bool)
             return LongR.of(longS.requestId, bool ? Code.OK : Code.REQUEST_FAIL, null);
         else if (methodReturn instanceof Number || returnClass == String.class)

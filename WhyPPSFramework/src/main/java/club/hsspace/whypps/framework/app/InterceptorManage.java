@@ -5,6 +5,8 @@ import club.hsspace.whypps.framework.app.annotation.DataParam;
 import club.hsspace.whypps.framework.app.annotation.Interceptor;
 import club.hsspace.whypps.framework.app.annotation.RequestEnum;
 import club.hsspace.whypps.framework.manage.EventManage;
+import club.hsspace.whypps.framework.manage.RunningSpace;
+import club.hsspace.whypps.framework.manage.SpaceManage;
 import club.hsspace.whypps.framework.manage.event.AfterRequestHandleEvent;
 import club.hsspace.whypps.framework.manage.event.BeforeRequestHandleEvent;
 import club.hsspace.whypps.handle.DataStream;
@@ -45,7 +47,7 @@ public class InterceptorManage {
     public Map<Class<?>, Object> runObj = new HashMap<>();
 
     public void registerInterceptor(Interceptor interceptor, Method method, Object obj) {
-        if(obj == null)
+        if (obj == null)
             return;
 
         for (RequestEnum requestEnum : interceptor.type()) {
@@ -155,6 +157,9 @@ public class InterceptorManage {
     @Injection
     private ContainerManage containerManage;
 
+    @Injection
+    private SpaceManage spaceManage;
+
     private void fillCustomObject(Object[] objects, Parameter[] parameters, Map<Class<?>, Object> objectMap) {
         Set<Class<?>> classes = objectMap.keySet();
         for (int i = 0; i < objects.length; i++) {
@@ -177,6 +182,8 @@ public class InterceptorManage {
             //TODO: 这里需要根据经验 使用频率排个序
             if (clazz == Object.class) {
                 param[i] = returnValue;
+            } else if (clazz == RunningSpace.class) {
+                param[i] = spaceManage.getRunningSpace(Thread.currentThread().getContextClassLoader());
             } else if (mountManage.hasMount(clazz)) {
                 param[i] = mountManage.getInstance(dataStream, clazz);
             } else if (clazz == DataStream.class) {
@@ -203,10 +210,14 @@ public class InterceptorManage {
                     param[i] = containerManage.getFromName(injection.name());
             } else {
                 Object obj = containerManage.getFromClass(clazz);
-                if (obj != null)
-                    param[i] = obj;
-                else
-                    param[i] = data.toJavaObject(clazz);
+                try {
+                    if (obj != null)
+                        param[i] = obj;
+                    else if (Object.class.isAssignableFrom(clazz))
+                        param[i] = data.toJavaObject(clazz);
+                } catch (RuntimeException e) {
+                    continue;
+                }
             }
         }
         return param;

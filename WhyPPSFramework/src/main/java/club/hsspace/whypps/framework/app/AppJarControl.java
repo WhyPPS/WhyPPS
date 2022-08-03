@@ -3,6 +3,8 @@ package club.hsspace.whypps.framework.app;
 import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.framework.app.annotation.*;
 import club.hsspace.whypps.framework.manage.FileManage;
+import club.hsspace.whypps.framework.manage.RunningSpace;
+import club.hsspace.whypps.framework.manage.SpaceManage;
 import club.hsspace.whypps.manage.ContainerManage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,25 +68,25 @@ public class AppJarControl {
     }
 
     //TODO: 这里需要重构为RunningSpace和使用EventManage
-    private String runPath;
+    private RunningSpace runningSpace;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Init(sort = 10)
-    private void initLib(FileManage fileManage) throws IOException {
+    private void initLib(FileManage fileManage, SpaceManage spaceManage) throws IOException {
         File file = fileManage.getFile("\\app\\" + name);
-        runPath = file.getPath();
+        runningSpace = new RunningSpace(file.getPath());
         if (!file.exists()) {
             file.mkdir();
         }
 
-        File lib = Path.of(runPath, "lib").toFile();
+        File lib = runningSpace.getFile("lib");
         if (!lib.exists()) {
             lib.mkdir();
         }
 
         //应用状态文件
-        File run = Path.of(runPath, "app.s").toFile();
+        File run = runningSpace.getFile("app.s");
         if (!run.exists()) {
             run.createNewFile();
             try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(run)))) {
@@ -96,7 +98,7 @@ public class AppJarControl {
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = entries.nextElement();
                 if (!jarEntry.isDirectory() && jarEntry.getName().startsWith("whypps.app/init/")) {
-                    File initFile = Path.of(runPath, jarEntry.getName().substring(16)).toFile();
+                    File initFile = runningSpace.getFile(jarEntry.getName().substring(16));
                     try (OutputStream os = new FileOutputStream(initFile)) {
                         try (InputStream is = jarFile.getInputStream(jarEntry)) {
                             byte[] bytes = is.readAllBytes();
@@ -120,6 +122,8 @@ public class AppJarControl {
                 .toArray(URL[]::new);
 
         appClassLoader = new URLClassLoader(urls, apiClassLoader);
+        Thread.currentThread().setContextClassLoader(appClassLoader);
+        spaceManage.registerRunningSpace(appClassLoader, runningSpace);
     }
 
     @Init(sort = 20)
@@ -168,6 +172,7 @@ public class AppJarControl {
                         Constructor<?> constructor = clazz.getDeclaredConstructor();
                         if (constructor != null) {
                             object = constructor.newInstance();
+                            containerManage.injection(object);
                             containerManage.registerObject(object);
                         }
                     } catch (Exception e) {

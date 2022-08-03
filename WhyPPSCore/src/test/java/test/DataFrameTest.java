@@ -1,6 +1,7 @@
 package test;
 
 import club.hsspace.whypps.model.DataFrame;
+import club.hsspace.whypps.model.DataLink;
 import club.hsspace.whypps.util.AESTools;
 import club.hsspace.whypps.util.NumberTools;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class DataFrameTest {
     @Test
     public void testPackData() {
         byte[] key = AESTools.generateKey();
-        byte[] data = new byte[random.nextInt(0xFFFFFF) + 0xFFFFFF];
+        byte[] data = new byte[100];
         random.nextBytes(data);
 
         byte[] srcSign = {1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2};
@@ -62,7 +63,27 @@ public class DataFrameTest {
             assertEquals((byte)((b >>> 1) & 0x7F), (byte) (i % 0x80));
             assertEquals(i == byteList.size() - 1 , (b & 1) == 1);
         }
-        //assertTrue(Arrays.equals(data, NumberTools.bytesMerger(byteList.stream().map(n -> Arrays.copyOfRange(n, 0, n.length-1)).toList())));
+        assertTrue(Arrays.equals(data, NumberTools.bytesMerger(byteList.stream().map(n -> Arrays.copyOfRange(n, 0, n.length-1)).toList())));
+    }
+
+    @Test
+    public void testDesData() {
+        byte[] key = AESTools.generateKey();
+        byte[] data = new byte[100];
+        random.nextBytes(data);
+
+        byte[] srcSign = {1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2};
+        byte[] tarSign = {3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4};
+
+        List<byte[]> byteList = DataFrame.packFrame2Stream(key, srcSign, tarSign, DataFrame.DataSign.data, data)
+                .map(DataFrame::toBytes)
+                .toList();
+
+        byteList.stream()
+                        .map(DataLink::new)
+                                .
+
+        assertTrue(Arrays.equals(data, NumberTools.bytesMerger(byteList.stream().map(n -> Arrays.copyOfRange(n, 0, n.length-1)).toList())));
     }
 
     //byteList.stream()
