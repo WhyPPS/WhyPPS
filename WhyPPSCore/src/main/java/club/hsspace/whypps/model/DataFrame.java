@@ -108,9 +108,9 @@ public class DataFrame {
      */
     public static Stream<DataFrame> packFrame2Stream(byte[] key, byte[] srcSign, byte[] tarSign, DataSign dataSign, byte[] data) {
         int dLen = data.length;
-        int size = Integer.max(1, dLen / 0x1FFFF + (dLen % 0x1FFFF == 0 ? 0 : 1));
+        int size = Integer.max(1, dLen / 0x1FF00 + (dLen % 0x1FF00 == 0 ? 0 : 1));
         Stream<DataFrame> result = IntStream.iterate(0, n -> n + 1)
-                .mapToObj(n -> packData(key, Arrays.copyOfRange(data, n * 0x1FFFF, Integer.min(n * 0x1FFFF + 0x1FFFF, dLen)), n == size - 1, (byte) (n % 0x80)))
+                .mapToObj(n -> packData(key, Arrays.copyOfRange(data, n * 0x1FF00, Integer.min(n * 0x1FF00 + 0x1FF00, dLen)), n == size - 1, (byte) (n % 0x80)))
                 .map(n -> new DataFrame(srcSign, tarSign, dataSign, n))
                 .limit(size);
         return result;

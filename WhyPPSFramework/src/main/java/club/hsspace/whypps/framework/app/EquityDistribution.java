@@ -93,6 +93,7 @@ public class EquityDistribution extends EquityProcessorImpl {
         try {
             methodReturn = interceptorManage.executeRequest(RequestEnum.BIN, binS.api, dataStream,data, mo, Map.of(BinS.class, binS, byte[].class, extraData));
         } catch (Exception e) {
+            e.printStackTrace();
             return DataLink.of(DataLabel.BIN_R, BinR.of(binS.requestId, Code.SERVER_ERROR, null, false, null), null);
         }
 
@@ -104,6 +105,8 @@ public class EquityDistribution extends EquityProcessorImpl {
             return emptyBinRDataLink(BinR.of(binS.requestId, code));
         else if (methodReturn instanceof BinR binR)
             return emptyBinRDataLink(binR);
+        else if (methodReturn instanceof BinRRecord binRRecord)
+            return DataLink.of(DataLabel.BIN_R, BinR.of(binS.requestId, Code.OK, binRRecord.jo(), true, MD5Tools.md5String(binRRecord.bin())), binRRecord.bin());
         else if (methodReturn instanceof JSONObject jsonObject)
             return emptyBinRDataLink(BinR.of(binS.requestId, Code.OK, jsonObject));
         else if (methodReturn instanceof JSONArray jsonArray)

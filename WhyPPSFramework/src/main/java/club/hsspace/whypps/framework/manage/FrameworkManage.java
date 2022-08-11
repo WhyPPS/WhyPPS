@@ -82,6 +82,10 @@ public class FrameworkManage {
         return containerManage;
     }
 
+    public WhyPPSApplication getWhyPPSApplication() {
+        return whyPPSApplication;
+    }
+
     public Properties getDefaultConfiguration() throws IOException {
         Properties prop = new Properties();
         byte[] bytes = Files.readAllBytes(Path.of(xmlConfiguration.getString(Configuration.AUTHORITY_PRIVATEKEY_PASSWORD)));

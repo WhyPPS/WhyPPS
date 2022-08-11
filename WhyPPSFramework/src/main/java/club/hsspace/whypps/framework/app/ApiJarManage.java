@@ -2,6 +2,8 @@ package club.hsspace.whypps.framework.app;
 
 import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.framework.manage.FileManage;
+import club.hsspace.whypps.framework.manage.RunningSpace;
+import club.hsspace.whypps.framework.manage.SpaceManage;
 import club.hsspace.whypps.manage.ContainerManage;
 import club.hsspace.whypps.processor.EquityProcessor;
 import club.hsspace.whypps.processor.SpreadProcessor;
@@ -33,7 +35,7 @@ public class ApiJarManage {
     private ClassLoader apiClassLoader;
 
     @Init
-    private void loadAllClass(ContainerManage containerManage, EquityProcessor equityProcessor, SpreadProcessor spreadProcessor) throws InvocationTargetException {
+    private void loadAllClass(ContainerManage containerManage, EquityProcessor equityProcessor, SpreadProcessor spreadProcessor, SpaceManage spaceManage) throws InvocationTargetException {
         MethodController methodController = new MethodController();
         containerManage.registerObject(methodController);
         containerManage.injection(methodController);
@@ -49,6 +51,8 @@ public class ApiJarManage {
         InterceptorManage interceptorManage = new InterceptorManage();
         containerManage.registerObject(interceptorManage);
         containerManage.injection(interceptorManage);
+
+        containerManage.dpi(RunningSpace.class, method -> spaceManage.getRunningSpace(Thread.currentThread().getContextClassLoader()));
 
         if(equityProcessor instanceof EquityDistribution ed){
             containerManage.injection(ed);

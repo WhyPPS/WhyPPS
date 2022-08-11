@@ -102,7 +102,7 @@ public class PluginControl {
         while (entries.hasMoreElements()) {
             JarEntry jarEntry = entries.nextElement();
             String jarName = jarEntry.getName();
-            if (!jarEntry.isDirectory() && jarName.endsWith(".class")) {
+            if (!jarEntry.isDirectory() && !jarName.equals("module-info.class") && jarName.endsWith(".class")) {
                 String className = jarName.replace(".class", "");
                 className = className.replace('/', '.');
                 Class<?> aClass = pluginClassLoader.loadClass(className);

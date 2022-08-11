@@ -9,6 +9,8 @@ import club.hsspace.whypps.run.WhyPPSApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -24,7 +26,7 @@ import java.util.Properties;
  */
 @Scan("club.hsspace.whypps.framework.run.WhyPPSFramework")
 @Container(register = false)
-public class WhyPPSFramework {
+public class WhyPPSFramework implements Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(WhyPPSFramework.class);
 
@@ -70,6 +72,12 @@ public class WhyPPSFramework {
 
     public static void main(String[] args) throws Exception {
         WhyPPSFramework.run();
+    }
+
+    @Override
+    public void close() throws IOException {
+        logger.info("正在关闭WhyPPSFramework");
+        frameworkManage.getWhyPPSApplication().closeService();
     }
 
 }

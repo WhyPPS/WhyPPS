@@ -1,10 +1,15 @@
 package club.hsspace.whypps.run;
 
 import club.hsspace.whypps.manage.ContainerManage;
+import club.hsspace.whypps.model.ContainerClosable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @ClassName: WhyPPSApplication
@@ -26,7 +31,7 @@ public class WhyPPSApplication {
         long start = System.currentTimeMillis();
 
         //启动容器管理器
-        if(o instanceof Class clazz) {
+        if (o instanceof Class clazz) {
             this.runClass = clazz;
             containerManage = new ContainerManage(runClass);
         } else {
@@ -58,5 +63,30 @@ public class WhyPPSApplication {
 
     public ContainerManage getContainerManage() {
         return containerManage;
+    }
+
+    public void closeService() throws IOException {
+        logger.info("执行关闭前清理任务,请耐心等待");
+
+        List<ContainerClosable> collect = containerManage.getClassContainer()
+                .filter(n -> n instanceof ContainerClosable)
+                .map(n -> (ContainerClosable) n)
+                .collect(Collectors.toList());
+
+        collect.addAll(containerManage.getNameContainer()
+                .filter(n -> n instanceof ContainerClosable)
+                .map(n -> (ContainerClosable) n)
+                .collect(Collectors.toList()));
+
+        for (ContainerClosable cc : collect) {
+            cc.closeTask();
+        }
+
+        for (ContainerClosable cc : collect) {
+            cc.close();
+        }
+
+        logger.info("WhyPPSApplication服务成功关闭");
+
     }
 }

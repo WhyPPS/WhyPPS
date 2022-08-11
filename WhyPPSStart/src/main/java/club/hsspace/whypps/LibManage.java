@@ -58,15 +58,41 @@ public class LibManage {
         }
     }
 
+    private Object whyPPSFramework;
+
     public synchronized void start() throws WhyPPSFrameworkNotFoundException {
         try {
             Class<?> aClass = urlClassLoader.loadClass("club.hsspace.whypps.framework.run.WhyPPSFramework");
             Method run = aClass.getMethod("run");
-            run.invoke(null);
+            whyPPSFramework = run.invoke(null);
+
+            /*new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                logger.info("======执行关闭程序======");
+                try {
+                    Method close = aClass.getMethod("close");
+                    close.invoke(whyPPSFramework);
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();*/
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             throw new WhyPPSFrameworkNotFoundException("包WhyPPSFramework版本不符或错误");
         }
+    }
+
+    public void stop() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method close = urlClassLoader.loadClass("club.hsspace.whypps.framework.run.WhyPPSFramework").getMethod("close");
+        close.invoke(whyPPSFramework);
     }
 
 }

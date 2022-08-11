@@ -3,6 +3,7 @@ package club.hsspace.whypps.manage;
 import club.hsspace.whypps.action.Container;
 import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.handle.LongMsgStream;
+import club.hsspace.whypps.model.ContainerClosable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ import java.util.Map;
  * @Mail: 1750359613@qq.com
  */
 @Container(sort = -100)
-public class LongMsgManage {
+public class LongMsgManage implements ContainerClosable {
 
     private static final Logger logger = LoggerFactory.getLogger(LongMsgManage.class);
 
@@ -50,4 +51,11 @@ public class LongMsgManage {
         lms.receiveData(data);
     }
 
+    @Override
+    public void close() throws IOException {
+        for (LongMsgStream value : longMsgStreamMap.values()) {
+            value.close();
+        }
+        logger.info("已经关闭所有长连接通道");
+    }
 }

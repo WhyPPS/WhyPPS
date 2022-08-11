@@ -106,6 +106,10 @@ public class ContainerManage {
         return containerClass.entrySet().stream().map(n -> n.getValue());
     }
 
+    public Stream<?> getNameContainer() {
+        return containerName.entrySet().stream().map(n -> n.getValue());
+    }
+
     private <T> T createObject(Class<T> clazz) throws InvocationTargetException {
         T object = null;
         try {
@@ -181,7 +185,7 @@ public class ContainerManage {
         this.dpiMap.put(clazz, dpi);
     }
 
-    private Object[] fillObject(Method method, Map<Class<?>, Object> fillMap) {
+    public Object[] fillObject(Method method, Map<Class<?>, Object> fillMap) {
         Parameter[] parameters = method.getParameters();
         Object[] objects = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {

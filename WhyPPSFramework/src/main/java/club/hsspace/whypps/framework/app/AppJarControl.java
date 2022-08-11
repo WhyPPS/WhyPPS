@@ -5,6 +5,7 @@ import club.hsspace.whypps.framework.app.annotation.*;
 import club.hsspace.whypps.framework.manage.FileManage;
 import club.hsspace.whypps.framework.manage.RunningSpace;
 import club.hsspace.whypps.framework.manage.SpaceManage;
+import club.hsspace.whypps.framework.manage.event.AppStartEvent;
 import club.hsspace.whypps.manage.ContainerManage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,7 +137,7 @@ public class AppJarControl {
         while (entries.hasMoreElements()) {
             JarEntry jarEntry = entries.nextElement();
             String jarName = jarEntry.getName();
-            if (!jarEntry.isDirectory() && jarName.endsWith(".class")) {
+            if (!jarEntry.isDirectory() && !jarName.equals("module-info.class") && jarName.endsWith(".class")) {
                 String className = jarName.replace(".class", "");
                 className = className.replace('/', '.');
                 Class<?> aClass = appClassLoader.loadClass(className);
@@ -232,12 +233,18 @@ public class AppJarControl {
             Object obj = containerManage.getFromClass(clazz);
             if (obj != null) {
                 method.setAccessible(true);
+
+                AppStartEvent appStartEvent = new AppStartEvent();
+                appStartEvent.setRunMethod(method);
+                appStartEvent.setObject(obj);
+                appStartEvent.setObjects(containerManage.fillObject(method, null));
+
                 if(!appStart.thread()) {
-                    containerManage.invokeMethod(method, obj);
+                    appStartEvent.getRunMethod().invoke(appStartEvent.getObject(), appStartEvent.getObjects());
                 } else {
                     new Thread(() -> {
                         try {
-                            containerManage.invokeMethod(method, obj);
+                            appStartEvent.getRunMethod().invoke(appStartEvent.getObject(), appStartEvent.getObjects());
                         } catch (InvocationTargetException e) {
                             throw new RuntimeException(e);
                         } catch (IllegalAccessException e) {

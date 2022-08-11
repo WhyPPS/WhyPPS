@@ -76,7 +76,7 @@ public class ClassScanner {
             if (chiFile.isDirectory() && scanSubdirectories) {
                 findClassLocal(packName + "." + chiFile.getName(), result, true);
             }
-            if (chiFile.getName().endsWith(".class")) {
+            if (!chiFile.getName().equals("module-info.class") && chiFile.getName().endsWith(".class")) {
                 Class<?> clazz = null;
                 try {
                     clazz = classLoader.loadClass(packName + "." + chiFile.getName().replace(".class", ""));
@@ -123,7 +123,7 @@ public class ClassScanner {
                     }
                     findClassJar(prefix, result, true);
                 }
-                if (jarEntry.getName().endsWith(".class")) {
+                if (!jarEntry.getName().equals("module-info.class") && jarEntry.getName().endsWith(".class")) {
                     Class<?> clazz = null;
                     try {
                         clazz = classLoader.loadClass(jarEntry.getName().replace("/", ".").replace(".class", ""));

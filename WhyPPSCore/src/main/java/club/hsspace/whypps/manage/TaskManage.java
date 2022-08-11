@@ -3,11 +3,14 @@ package club.hsspace.whypps.manage;
 import club.hsspace.whypps.action.Container;
 import club.hsspace.whypps.action.Init;
 import club.hsspace.whypps.model.Callback;
+import club.hsspace.whypps.model.ContainerClosable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName: TaskManage
@@ -17,7 +20,7 @@ import java.util.concurrent.Executors;
  * @Mail: 1750359613@qq.com
  */
 @Container(sort = -80)
-public class TaskManage {
+public class TaskManage implements ContainerClosable {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskManage.class);
 
@@ -42,4 +45,16 @@ public class TaskManage {
         es.submit(() -> run.run(t));
     }
 
+    @Override
+    public void close() throws IOException {
+        es.shutdownNow();
+        try {
+            boolean isTermination = es.awaitTermination(60, TimeUnit.SECONDS);
+            if(!isTermination){
+                throw new IOException();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

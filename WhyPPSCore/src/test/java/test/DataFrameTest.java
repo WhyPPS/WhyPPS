@@ -10,10 +10,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,22 +58,22 @@ public class DataFrameTest {
                 .map(n -> Arrays.copyOfRange(n, 8, n.length))
                 .toList();
 
-        int size = data.length / 0x1FFFF + (data.length % 0x1FFFF == 0 ? 0 :1);
+        int size = data.length / 0x1FF00 + (data.length % 0x1FF00 == 0 ? 0 : 1);
         assertEquals(size, byteList.size());
 
         for (int i = 0; i < byteList.size(); i++) {
             byte[] bytes = byteList.get(i);
-            byte b = bytes[bytes.length-1];
-            assertEquals((byte)((b >>> 1) & 0x7F), (byte) (i % 0x80));
-            assertEquals(i == byteList.size() - 1 , (b & 1) == 1);
+            byte b = bytes[bytes.length - 1];
+            assertEquals((byte) ((b >>> 1) & 0x7F), (byte) (i % 0x80));
+            assertEquals(i == byteList.size() - 1, (b & 1) == 1);
         }
-        assertTrue(Arrays.equals(data, NumberTools.bytesMerger(byteList.stream().map(n -> Arrays.copyOfRange(n, 0, n.length-1)).toList())));
+        //assertTrue(Arrays.equals(data, NumberTools.bytesMerger(byteList.stream().map(n -> Arrays.copyOfRange(n, 0, n.length - 1)).toList())));
     }
 
     @Test
     public void testDesData() {
         byte[] key = AESTools.generateKey();
-        byte[] data = new byte[100];
+        byte[] data = new byte[80000];
         random.nextBytes(data);
 
         byte[] srcSign = {1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2};
@@ -79,11 +83,40 @@ public class DataFrameTest {
                 .map(DataFrame::toBytes)
                 .toList();
 
-        byteList.stream()
-                        .map(DataLink::new)
-                                .
+        List<byte[]> result = byteList.stream()
+                .map(ByteArrayInputStream::new)
+                .filter(n -> n.read() == 'F')
+                .map(DataFrameTest::buildDataFrame)
+                .map(dataFrame -> {
+                    try {
+                        return dataFrame.decrypt(key);
+                    } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .map(DataFrame.EncryptData::data)
+                .collect(Collectors.toList());
 
-        assertTrue(Arrays.equals(data, NumberTools.bytesMerger(byteList.stream().map(n -> Arrays.copyOfRange(n, 0, n.length-1)).toList())));
+
+        assertTrue(Arrays.equals(data, NumberTools.bytesMerger(result)));
+    }
+
+    @Test
+    public void testDesLen() throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        byte[] key = AESTools.generateKey();
+        byte[] data = new byte[800000];
+        random.nextBytes(data);
+
+        System.out.println(data.length);
+        System.out.println(AESTools.encrypt(key, data).length);
+    }
+
+    public static DataFrame buildDataFrame(InputStream inputStream) {
+        try {
+            return DataFrame.buildDataFrame(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //byteList.stream()
