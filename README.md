@@ -6,4 +6,6 @@ If you approve this project, you can click 'Star'.
 This project applies the Apache License 2.0 open source protocol
 You can develop your software under the premise of conforming to the open source agreement
 
+The WhyPPS app and plugin example can go to: https://github.com/orgs/WhyPPS/repositories
+
 If you have any questions, please contact the author: Qing_ning61@outlook.com
