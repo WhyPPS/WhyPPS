@@ -1,3 +1,6 @@
+The wiki is temporarily located at: http://gitea.hsspace.club:3000/WhyPPS_Project/WhyPPS/wiki
+In the next phase, we will migrate to github: wiki
+
 注意，本项目仍处于开发阶段，尽管您可以游览源代码，但您在开发和使用的过程中必须遵守和注意的是
 
 + 您可以在这个阶段为WhyPPSFramework开发相关插件和应用(衍生产品)，但必须指向本项目官方网站。
